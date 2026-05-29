@@ -18,8 +18,9 @@ const uploadToCloudinary = (buffer, options = {}) => {
     
     // Si no se especificó, Cloudinary detectará automáticamente
     const uploadOptions = {
-      folder: options.folder || "virtuosakardi/productos",
+      folder: options.folder || "Recfacilal/usuarios",
       resource_type: resource_type,
+      public_id: options.public_id,
       allowed_formats: options.allowed_formats || ["jpg", "jpeg", "png", "webp", "gif", "mp4", "mov", "avi", "mkv", "pdf"],
       transformation: options.transformation || [],
       timeout: 120000, // 2 minutos de timeout para archivos grandes
