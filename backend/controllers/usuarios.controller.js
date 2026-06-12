@@ -36,6 +36,26 @@ async function guardarMetadataLocal(carpetaUsuario, datos) {
   );
 }
 
+async function limpiarCacheDeepFace() {
+  const datasetDir = path.join(__dirname, "../../ML/dataset");
+
+  try {
+    const archivos = await fs.readdir(datasetDir);
+    const caches = archivos.filter((archivo) => archivo.endsWith(".pkl"));
+
+    await Promise.all(
+      caches.map((cache) =>
+        fs.rm(path.join(datasetDir, cache), { force: true })
+      )
+    );
+
+    return caches;
+  } catch (error) {
+    console.error("Error limpiando cache de DeepFace:", error);
+    return [];
+  }
+}
+
 async function crearUsuario(req, res) {
   const nombre = String(req.body.nombre || "").trim();
   const codigo = String(req.body.codigo || "").trim();
@@ -101,6 +121,7 @@ async function crearUsuario(req, res) {
 
     const usuario = await Usuario.crearUsuario(nombre, codigo);
     await Usuario.guardarFotosUsuario(usuario.id_usuario, fotosSubidas);
+    await limpiarCacheDeepFace();
 
     return res.status(201).json({
       success: true,
@@ -142,7 +163,71 @@ async function obtenerUsuarios(req, res) {
   }
 }
 
+async function eliminarUsuario(req, res) {
+  const usuarioId = Number(req.params.id);
+
+  try {
+    if (!Number.isInteger(usuarioId) || usuarioId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario invalido",
+      });
+    }
+
+    const usuario = await Usuario.obtenerUsuarioPorId(usuarioId);
+
+    if (!usuario) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado",
+      });
+    }
+
+    const fotos = await Usuario.obtenerFotosUsuario(usuarioId);
+    const publicIds = fotos
+      .map((foto) => foto.public_id)
+      .filter(Boolean);
+    const carpetasLocales = [
+      ...new Set(
+        fotos
+          .map((foto) => foto.local_path && path.dirname(foto.local_path))
+          .filter(Boolean)
+      ),
+    ];
+
+    const resultadoCloudinary = await eliminarMultiplesArchivos(publicIds);
+
+    await Promise.all(
+      carpetasLocales.map((carpeta) =>
+        fs.rm(carpeta, { recursive: true, force: true })
+      )
+    );
+
+    await Usuario.eliminarUsuario(usuarioId);
+    const cachesEliminados = await limpiarCacheDeepFace();
+
+    return res.status(200).json({
+      success: true,
+      message: "Usuario eliminado correctamente",
+      data: {
+        usuario,
+        fotosEliminadas: fotos.length,
+        cachesEliminados,
+        cloudinary: resultadoCloudinary,
+      },
+    });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error del servidor al eliminar usuario",
+    });
+  }
+}
+
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  eliminarUsuario,
 };

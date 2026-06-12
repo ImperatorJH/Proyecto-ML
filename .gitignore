@@ -1,0 +1,18 @@
+# Archivos temporales generados por el reconocimiento facial
+ML/temp.jpg
+
+# Cache de Python
+__pycache__/
+*.pyc
+
+# Reportes generados localmente
+backend/reportes/
+ML/reportes/
+
+# Mantener la carpeta dataset en Git, pero no subir usuarios/fotos/cache generado
+ML/dataset/*
+!ML/dataset/.gitkeep
+
+# Dependencias y build del frontend Vue
+frontend/node_modules/
+frontend/dist/

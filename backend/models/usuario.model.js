@@ -49,8 +49,38 @@ async function obtenerUsuarios() {
   return rows;
 }
 
+async function obtenerUsuarioPorId(usuarioId) {
+  const [rows] = await db.query(
+    "SELECT id_usuario, nombre, codigo, creado FROM usuarios WHERE id_usuario = ?",
+    [usuarioId]
+  );
+
+  return rows[0] || null;
+}
+
+async function obtenerFotosUsuario(usuarioId) {
+  const [rows] = await db.query(
+    "SELECT id, url, public_id, local_path FROM usuario_fotos WHERE usuario_id = ?",
+    [usuarioId]
+  );
+
+  return rows;
+}
+
+async function eliminarUsuario(usuarioId) {
+  const [result] = await db.query(
+    "DELETE FROM usuarios WHERE id_usuario = ?",
+    [usuarioId]
+  );
+
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   crearUsuario,
   guardarFotosUsuario,
   obtenerUsuarios,
+  obtenerUsuarioPorId,
+  obtenerFotosUsuario,
+  eliminarUsuario,
 };

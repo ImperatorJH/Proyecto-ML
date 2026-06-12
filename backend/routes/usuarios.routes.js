@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   crearUsuario,
   obtenerUsuarios,
+  eliminarUsuario,
 } = require("../controllers/usuarios.controller");
 const {
   upload,
@@ -10,6 +11,8 @@ const {
 } = require("../config/cloudinary.config");
 
 router.get("/", obtenerUsuarios);
+
+router.delete("/:id", eliminarUsuario);
 
 router.post(
   "/crear-usuario",

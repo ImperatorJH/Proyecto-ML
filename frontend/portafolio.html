@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio - Sistema de Reconocimiento Facial</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #151515;
+  --bg-soft: #202124;
+  --panel: #26272b;
+  --panel-2: #2f3035;
+  --line: rgba(255, 255, 255, 0.13);
+  --text: #f7f2ea;
+  --muted: #b8b0a4;
+  --red: #c8102e;
+  --teal: #24c6b2;
+  --amber: #f2b84b;
+  --green: #8fc05a;
+  --ink: #101114;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(200, 16, 46, 0.20), transparent 32rem),
+    radial-gradient(circle at 88% 12%, rgba(36, 198, 178, 0.16), transparent 30rem),
+    linear-gradient(135deg, #151515 0%, #242326 45%, #181818 100%);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px clamp(18px, 4vw, 52px);
+  background: rgba(21, 21, 21, 0.82);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--red), var(--amber));
+  color: white;
+  box-shadow: 0 12px 24px rgba(200, 16, 46, 0.24);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a,
+.btn {
+  min-height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.nav-links a {
+  padding: 0 12px;
+  color: var(--muted);
+}
+
+.nav-links a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.nav-links .nav-cta {
+  color: #101114;
+  background: var(--teal);
+}
+
+.btn {
+  border: 1px solid transparent;
+  padding: 0 16px;
+}
+
+.btn:hover,
+.nav-links a:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--teal);
+  color: var(--ink);
+}
+
+.btn-primary:hover {
+  background: #3bd9c8;
+}
+
+.btn-outline {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  border-color: rgba(36, 198, 178, 0.6);
+}
+
+.page-section {
+  padding: clamp(58px, 8vw, 96px) clamp(18px, 4vw, 52px);
+}
+
+.container {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.hero {
+  min-height: calc(100vh - 68px);
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: clamp(32px, 5vw, 72px);
+  padding: clamp(52px, 7vw, 86px) clamp(18px, 4vw, 52px) 46px;
+}
+
+.eyebrow,
+.section-label {
+  margin: 0 0 12px;
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 860px;
+  font-size: clamp(2.6rem, 6.2vw, 5.8rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.hero h1 span {
+  color: var(--amber);
+}
+
+.hero-sub {
+  max-width: 680px;
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.stat {
+  min-height: 94px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stat strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.stat span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.system-shot {
+  position: relative;
+  min-height: 520px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(36, 198, 178, 0.10), transparent 44%),
+    linear-gradient(160deg, #27282d, #18191c);
+  box-shadow: var(--shadow);
+}
+
+.shot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--red);
+}
+
+.dots span:nth-child(2) {
+  background: var(--amber);
+}
+
+.dots span:nth-child(3) {
+  background: var(--green);
+}
+
+.shot-status {
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.camera-visual {
+  position: relative;
+  min-height: 258px;
+  margin: 18px;
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 36%, rgba(36, 198, 178, 0.20), transparent 7rem),
+    #111214;
+  background-size: 34px 34px, 34px 34px, auto, auto;
+}
+
+.face-frame {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 170px;
+  height: 210px;
+  border: 2px solid var(--teal);
+  border-radius: 44% 44% 38% 38%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 34px rgba(36, 198, 178, 0.22);
+}
+
+.face-frame::before,
+.face-frame::after {
+  content: "";
+  position: absolute;
+  top: 76px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--teal);
+}
+
+.face-frame::before {
+  left: 48px;
+}
+
+.face-frame::after {
+  right: 48px;
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 42%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  box-shadow: 0 0 18px var(--teal);
+}
+
+.shot-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.mini-card {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mini-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mini-card strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(280px, 0.65fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.5vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.section-desc {
+  margin: 0;
+  color: var(--muted);
+}
+
+.grid-2,
+.grid-3,
+.grid-4 {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.card,
+.feature,
+.timeline-card,
+.team-card,
+.result-card,
+.repo-card,
+.table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.card,
+.feature,
+.timeline-card,
+.team-card,
+.result-card {
+  padding: 22px;
+}
+
+.card h3,
+.feature h3,
+.timeline-card h3,
+.result-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+}
+
+.card p,
+.feature p,
+.timeline-card p,
+.result-card p,
+.team-card span {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.feature {
+  position: relative;
+  overflow: hidden;
+  min-height: 188px;
+}
+
+.feature::before {
+  content: attr(data-step);
+  position: absolute;
+  right: 18px;
+  top: 12px;
+  color: rgba(255, 255, 255, 0.06);
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tech-card {
+  min-height: 178px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.tech-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.tech-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.tag {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--amber);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.architecture {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-soft);
+}
+
+.arch-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.arch-box {
+  min-height: 122px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.arch-box strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.arch-box span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.timeline-card {
+  min-height: 220px;
+  position: relative;
+}
+
+.timeline-card small {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(36, 198, 178, 0.14);
+  color: var(--teal);
+  font-weight: 900;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+th {
+  color: var(--teal);
+  background: rgba(0, 0, 0, 0.20);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+td {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.priority {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.high {
+  background: var(--red);
+}
+
+.medium {
+  color: var(--ink);
+  background: var(--amber);
+}
+
+.low {
+  color: var(--ink);
+  background: var(--green);
+}
+
+.team-card {
+  text-align: center;
+}
+
+.avatar {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--teal), var(--green));
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.team-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+}
+
+.result-card {
+  display: flex;
+  gap: 14px;
+}
+
+.result-num {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--teal);
+  font-weight: 900;
+}
+
+.repo-card {
+  padding: clamp(24px, 4vw, 42px);
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(36, 198, 178, 0.12), rgba(200, 16, 46, 0.12)),
+    var(--panel);
+}
+
+.repo-card h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
+}
+
+.repo-url {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 18px 0 24px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  color: var(--teal);
+  background: rgba(0, 0, 0, 0.20);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-decoration: none;
+}
+
+footer {
+  padding: 34px 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 1040px) {
+  .hero,
+  .section-head,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-4,
+  .timeline,
+  .arch-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-stats,
+  .grid-3,
+  .grid-4,
+  .timeline,
+  .arch-row {
+    grid-template-columns: 1fr;
+  }
+
+  .system-shot {
+    min-height: 460px;
+  }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="#inicio" aria-label="Inicio del portafolio">
+    <span class="brand-mark">UT</span>
+    IDEAD ML 2026
+  </a>
+  <ul class="nav-links">
+    <li><a href="#proyecto">Proyecto</a></li>
+    <li><a href="#tecnologias">Stack</a></li>
+    <li><a href="#arquitectura">Arquitectura</a></li>
+    <li><a href="#requisitos">Requisitos</a></li>
+    <li><a href="#equipo">Equipo</a></li>
+    <li><a class="nav-cta" href="/frontend/index.html">Sistema</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero" id="inicio">
+    <div>
+      <p class="eyebrow">Universidad del Tolima - IDEAD - 2026</p>
+      <h1>Control de asistencia con <span>reconocimiento facial</span></h1>
+      <p class="hero-sub">
+        Prototipo funcional con vision por computador, aprendizaje automatico, dashboard web,
+        almacenamiento local y reportes de asistencia para un entorno academico.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="/frontend/index.html">Entrar al sistema</a>
+        <a class="btn btn-outline" href="#proyecto">Ver portafolio</a>
+        <a class="btn btn-outline" href="https://github.com/ImperatorJH/Proyecto-ML" target="_blank" rel="noreferrer">Repositorio</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>9</strong><span>Requisitos funcionales</span></div>
+        <div class="stat"><strong>6</strong><span>Requisitos no funcionales</span></div>
+        <div class="stat"><strong>5</strong><span>Fases de desarrollo</span></div>
+        <div class="stat"><strong>6</strong><span>Integrantes</span></div>
+      </div>
+    </div>
+
+    <div class="system-shot" aria-label="Vista visual del sistema">
+      <div class="shot-top">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="shot-status">Reconocimiento activo</span>
+      </div>
+      <div class="camera-visual">
+        <div class="face-frame"></div>
+        <div class="scan-line"></div>
+      </div>
+      <div class="shot-cards">
+        <div class="mini-card"><span>Estudiante</span><strong>Reconocido</strong></div>
+        <div class="mini-card"><span>Registro</span><strong>Fecha y hora</strong></div>
+        <div class="mini-card"><span>Dataset</span><strong>Fotos locales</strong></div>
+        <div class="mini-card"><span>Reportes</span><strong>CSV</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="proyecto">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">01 - Proyecto</p>
+          <h2 class="section-title">Un prototipo para automatizar la asistencia academica</h2>
+        </div>
+        <p class="section-desc">
+          El sistema reemplaza el control manual de asistencia mediante reconocimiento facial,
+          registro automatico y visualizacion en un dashboard local.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Problema identificado</h3>
+          <p>El control manual genera demoras en reportes, errores humanos y riesgo de suplantacion de identidad en escenarios academicos.</p>
+        </article>
+        <article class="card">
+          <h3>Solucion propuesta</h3>
+          <p>Capturar video, reconocer estudiantes registrados, almacenar nombre, codigo, fecha y hora, y generar reportes locales.</p>
+        </article>
+        <article class="card">
+          <h3>Alcance</h3>
+          <p>Proyecto academico tipo prototipo funcional, con conjunto limitado de usuarios, ejecucion local y documentacion tecnica.</p>
+        </article>
+        <article class="card">
+          <h3>Valor agregado</h3>
+          <p>Ademas del dataset local, las fotos de registro se respaldan en Cloudinary como evidencia de integracion en la nube.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="objetivos">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">02 - Objetivos</p>
+          <h2 class="section-title">Objetivos del desarrollo</h2>
+        </div>
+        <p class="section-desc">Cada objetivo se conecta con una parte implementada del sistema: camara, IA, base de datos, frontend y reportes.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="feature" data-step="01"><h3>Captura en tiempo real</h3><p>Implementar captura de imagen y video desde la camara del equipo.</p></article>
+        <article class="feature" data-step="02"><h3>Reconocimiento facial</h3><p>Usar DeepFace y OpenCV para comparar rostros contra el dataset registrado.</p></article>
+        <article class="feature" data-step="03"><h3>Dataset organizado</h3><p>Crear carpetas por estudiante con fotos y metadatos de nombre/codigo.</p></article>
+        <article class="feature" data-step="04"><h3>Persistencia</h3><p>Guardar usuarios, fotos y asistencias en MySQL con estructura clara.</p></article>
+        <article class="feature" data-step="05"><h3>Dashboard</h3><p>Administrar usuarios, consultar asistencias y exportar reportes desde una interfaz web.</p></article>
+        <article class="feature" data-step="06"><h3>Reduccion de errores</h3><p>Minimizar suplantacion y registros manuales inconsistentes.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="tecnologias">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">03 - Stack</p>
+          <h2 class="section-title">Tecnologias integradas</h2>
+        </div>
+        <p class="section-desc">El prototipo combina vision artificial, servicios web, almacenamiento relacional y frontend nativo.</p>
+      </div>
+
+      <div class="grid-4">
+        <article class="tech-card"><strong>Python</strong><p>Modulo ML y logica de reconocimiento facial.</p><span class="tag">IA</span></article>
+        <article class="tech-card"><strong>OpenCV</strong><p>Captura y procesamiento de video en tiempo real.</p><span class="tag">Vision</span></article>
+        <article class="tech-card"><strong>DeepFace</strong><p>Embeddings faciales y comparacion contra dataset.</p><span class="tag">Modelo</span></article>
+        <article class="tech-card"><strong>MySQL</strong><p>Base de datos de usuarios, fotos y asistencia.</p><span class="tag">Datos</span></article>
+        <article class="tech-card"><strong>Node.js</strong><p>API Express para conectar frontend, ML y base de datos.</p><span class="tag">Backend</span></article>
+        <article class="tech-card"><strong>HTML CSS JS</strong><p>Dashboard operativo y portafolio del proyecto.</p><span class="tag">Frontend</span></article>
+        <article class="tech-card"><strong>Cloudinary</strong><p>Almacenamiento en nube para fotos capturadas.</p><span class="tag">Nube</span></article>
+        <article class="tech-card"><strong>CSV</strong><p>Reportes locales exportables desde backend o Python.</p><span class="tag">Reporte</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="arquitectura">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">04 - Arquitectura</p>
+          <h2 class="section-title">Flujo tecnico del sistema</h2>
+        </div>
+        <p class="section-desc">La solucion se divide en captura, reconocimiento, persistencia y presentacion web.</p>
+      </div>
+
+      <div class="architecture">
+        <div class="arch-row">
+          <div class="arch-box"><strong>Camara</strong><span>Captura video y fotos de registro.</span></div>
+          <div class="arch-box"><strong>OpenCV + DeepFace</strong><span>Detecta y compara rostros.</span></div>
+          <div class="arch-box"><strong>MySQL</strong><span>Guarda usuarios, fotos y asistencia.</span></div>
+          <div class="arch-box"><strong>Dashboard</strong><span>Consulta datos, crea usuarios y genera reportes.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="metodologia">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">05 - Metodologia</p>
+          <h2 class="section-title">Desarrollo incremental</h2>
+        </div>
+        <p class="section-desc">El proyecto se construye por fases para validar cada capa antes de integrarla.</p>
+      </div>
+
+      <div class="timeline">
+        <article class="timeline-card"><small>Fase 1</small><h3>Investigacion</h3><p>Analisis de reconocimiento facial, librerias y requisitos del prototipo.</p></article>
+        <article class="timeline-card"><small>Fase 2</small><h3>IA facial</h3><p>Captura, dataset, deteccion y comparacion de rostros.</p></article>
+        <article class="timeline-card"><small>Fase 3</small><h3>Base de datos</h3><p>Modelo relacional para usuarios, fotos y asistencias.</p></article>
+        <article class="timeline-card"><small>Fase 4</small><h3>Dashboard</h3><p>Interfaz web, API Node.js y acciones del sistema.</p></article>
+        <article class="timeline-card"><small>Fase 5</small><h3>Pruebas</h3><p>Validacion de registro, reconocimiento, duplicados y reportes.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="requisitos">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">06 - Requisitos</p>
+          <h2 class="section-title">Requisitos documentados</h2>
+        </div>
+        <p class="section-desc">Resumen de requisitos funcionales y no funcionales solicitados para el prototipo.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Funcional</th><th>Descripcion</th><th>Prioridad</th></tr></thead>
+            <tbody>
+              <tr><td>RF-01</td><td>Registro facial</td><td>Capturar imagenes y asociarlas a nombre y codigo.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RF-02</td><td>Video en tiempo real</td><td>Capturar video desde la camara.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RF-03</td><td>Deteccion</td><td>Detectar rostros en cada cuadro.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RF-04</td><td>Comparacion</td><td>Comparar rostro detectado contra registrados.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RF-05</td><td>Asistencia</td><td>Guardar nombre, codigo, fecha y hora.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RF-06</td><td>Reportes</td><td>Generar CSV local de asistencia.</td><td><span class="priority medium">Media</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>No funcional</th><th>Descripcion</th><th>Prioridad</th></tr></thead>
+            <tbody>
+              <tr><td>RNF-01</td><td>Estructura</td><td>Carpetas y archivos organizados.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RNF-02</td><td>Legibilidad</td><td>Codigo separado por responsabilidades.</td><td><span class="priority medium">Media</span></td></tr>
+              <tr><td>RNF-03</td><td>Interfaz</td><td>Dashboard claro y funcional.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RNF-04</td><td>Local</td><td>Funcionamiento estable en entorno local.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RNF-05</td><td>Almacenamiento</td><td>Dataset, MySQL y reportes organizados.</td><td><span class="priority high">Alta</span></td></tr>
+              <tr><td>RNF-06</td><td>Documentacion</td><td>README, requisitos y portafolio.</td><td><span class="priority medium">Media</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="resultados">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">07 - Resultados</p>
+          <h2 class="section-title">Entregables del sistema</h2>
+        </div>
+        <p class="section-desc">El prototipo demuestra el flujo completo desde registro facial hasta reporte exportable.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="result-card"><span class="result-num">1</span><div><h3>Reconocimiento</h3><p>Identificacion de estudiantes registrados mediante camara.</p></div></article>
+        <article class="result-card"><span class="result-num">2</span><div><h3>Asistencia</h3><p>Registro automatico con nombre, codigo, fecha y hora.</p></div></article>
+        <article class="result-card"><span class="result-num">3</span><div><h3>Dashboard</h3><p>Consulta de asistencias, usuarios y reportes.</p></div></article>
+        <article class="result-card"><span class="result-num">4</span><div><h3>Dataset</h3><p>Fotos locales organizadas por estudiante.</p></div></article>
+        <article class="result-card"><span class="result-num">5</span><div><h3>Cloudinary</h3><p>Respaldo de fotos en la nube.</p></div></article>
+        <article class="result-card"><span class="result-num">6</span><div><h3>CSV</h3><p>Exportacion local para consulta administrativa.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="equipo">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="section-label">08 - Equipo</p>
+          <h2 class="section-title">Integrantes</h2>
+        </div>
+        <p class="section-desc">Ingenieria de Sistemas - IDEAD - Universidad del Tolima. Docente: Ivan Andres Blanco Polania.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="team-card"><div class="avatar">JC</div><h3>Jhon Jairo Cespedes</h3><span>Lider del proyecto</span></article>
+        <article class="team-card"><div class="avatar">JD</div><h3>Jhonatan David Contreras Herrera</h3><span>Integrante</span></article>
+        <article class="team-card"><div class="avatar">JM</div><h3>Johan Mauricio Ruiz Chavez</h3><span>Integrante</span></article>
+        <article class="team-card"><div class="avatar">JJ</div><h3>Juan Jose Huertas</h3><span>Integrante</span></article>
+        <article class="team-card"><div class="avatar">JS</div><h3>Jhoan Sebastian Sanabria Gomez</h3><span>Integrante</span></article>
+        <article class="team-card"><div class="avatar">LS</div><h3>Leticia Sanchez</h3><span>Integrante</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" id="repo">
+    <div class="container">
+      <article class="repo-card">
+        <p class="section-label">09 - Repositorio</p>
+        <h2>Codigo fuente y documentacion</h2>
+        <p class="section-desc" style="margin: 0 auto;">El proyecto incluye backend, frontend, modulo ML, SQL, documentacion de requisitos y guia de uso.</p>
+        <a class="repo-url" href="https://github.com/ImperatorJH/Proyecto-ML" target="_blank" rel="noreferrer">https://github.com/ImperatorJH/Proyecto-ML.git</a>
+        <div class="hero-cta" style="justify-content:center; margin-top:0;">
+          <a class="btn btn-primary" href="/frontend/index.html">Abrir sistema</a>
+          <a class="btn btn-outline" href="https://github.com/ImperatorJH/Proyecto-ML" target="_blank" rel="noreferrer">Ver en GitHub</a>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>Universidad del Tolima - IDEAD - Ingenieria de Sistemas - 2026</strong>
+  <div>Asignatura: Aprendizaje Automatico - Proyecto ABP</div>
+</footer>
+</body>
+</html>
