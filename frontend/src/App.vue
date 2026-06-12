@@ -26,6 +26,7 @@ const users = ref([]);
 const secondsLeft = ref(REFRESH_SECONDS);
 const loadingAction = ref(false);
 const recognitionModalOpen = ref(false);
+const recognitionNotice = ref(null);
 const apiStatus = ref("Conectando");
 const loadStatus = ref("Cargando datos...");
 const userStatus = ref("Listo");
@@ -34,6 +35,9 @@ const tableMessage = ref("No hay asistencias registradas.");
 const usersMessage = ref("No hay usuarios registrados.");
 const activePage = ref("dashboard");
 const intervals = [];
+let recognitionPollInterval = null;
+let recognitionNoticeTimer = null;
+let lastRecognitionRecordId = 0;
 
 const pages = {
   dashboard: {
@@ -100,6 +104,57 @@ async function loadAll(manual = false) {
   await Promise.all([loadRecords(manual), loadUsers(manual)]);
 }
 
+function getLatestRecordId(items = records.value) {
+  return items.reduce((latest, record) => Math.max(latest, Number(record.id) || 0), 0);
+}
+
+function showRecognitionNotice(record) {
+  recognitionNotice.value = {
+    title: "Asistencia registrada",
+    message: `${record.nombre ?? "Usuario"}${record.codigo ? ` (${record.codigo})` : ""}`,
+    time: formatTime(record.hora),
+  };
+
+  clearTimeout(recognitionNoticeTimer);
+  recognitionNoticeTimer = setTimeout(() => {
+    recognitionNotice.value = null;
+  }, 4200);
+}
+
+async function checkRecognitionRegistrations() {
+  try {
+    const latestRecords = sortRecentFirst(await getAttendance());
+    const newestRecord = latestRecords[0];
+    const newestId = getLatestRecordId(latestRecords);
+
+    if (newestRecord && newestId > lastRecognitionRecordId) {
+      lastRecognitionRecordId = newestId;
+      records.value = latestRecords;
+      loadStatus.value = `Ultima carga: ${new Date().toLocaleTimeString("es-CO")}`;
+      apiStatus.value = "En linea";
+      showRecognitionNotice(newestRecord);
+    }
+  } catch (error) {
+    console.error("Error revisando registros del reconocimiento:", error);
+  }
+}
+
+function startRecognitionPolling() {
+  stopRecognitionPolling();
+  lastRecognitionRecordId = getLatestRecordId();
+  recognitionPollInterval = setInterval(checkRecognitionRegistrations, 1800);
+}
+
+function stopRecognitionPolling() {
+  if (recognitionPollInterval) {
+    clearInterval(recognitionPollInterval);
+    recognitionPollInterval = null;
+  }
+
+  clearTimeout(recognitionNoticeTimer);
+  recognitionNotice.value = null;
+}
+
 async function handleDeleteUser(user) {
   const name = user?.nombre || "este usuario";
   const confirmed = window.confirm(
@@ -138,12 +193,16 @@ async function handleStartRecognition() {
   const started = await runRecognitionAction(startRecognition, "No se pudo iniciar el reconocimiento");
   if (started) {
     recognitionModalOpen.value = true;
+    startRecognitionPolling();
   }
 }
 
 async function handleStopRecognition() {
   const stopped = await runRecognitionAction(stopRecognition, "No se pudo detener el reconocimiento");
-  if (stopped) recognitionModalOpen.value = false;
+  if (stopped) {
+    recognitionModalOpen.value = false;
+    stopRecognitionPolling();
+  }
 }
 
 async function handleReport() {
@@ -190,6 +249,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("hashchange", syncPageFromHash);
   intervals.forEach((interval) => clearInterval(interval));
+  stopRecognitionPolling();
   clearCapturedPhotos();
 });
 </script>
@@ -256,6 +316,7 @@ onBeforeUnmount(() => {
       <RecognitionModal
         :open="recognitionModalOpen"
         :stream-url="getRecognitionStreamUrl()"
+        :notice="recognitionNotice"
         :stopping="loadingAction"
         @close="handleStopRecognition"
       />

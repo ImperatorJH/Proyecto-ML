@@ -12,6 +12,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  notice: {
+    type: Object,
+    default: null,
+  },
 });
 
 defineEmits(["close"]);
@@ -33,6 +37,13 @@ defineEmits(["close"]);
 
         <div class="recognition-view">
           <img :src="streamUrl" alt="Video de reconocimiento facial" />
+          <Transition name="notice-pop">
+            <div v-if="notice" class="recognition-notice" role="status" aria-live="polite">
+              <span>{{ notice.title }}</span>
+              <strong>{{ notice.message }}</strong>
+              <small>{{ notice.time }}</small>
+            </div>
+          </Transition>
         </div>
       </div>
     </div>
